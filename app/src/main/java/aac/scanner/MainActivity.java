@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         approx.convertTo(mat,CvType.CV_32S);
         contours.add(mat);
         Imgproc.drawContours(rgba,contours,-1, new Scalar(0,255,0),2);
-        return rgba;
+        return canny;
     }
 
     @Override
