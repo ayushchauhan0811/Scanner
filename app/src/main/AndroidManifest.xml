@@ -3,11 +3,7 @@
     package="aac.scanner">
 
     <uses-permission android:name="android.permission.CAMERA"/>
-
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.front.autofocus" android:required="false"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <supports-screens
         android:anyDensity="true"
@@ -34,6 +30,4 @@
             android:name="io.fabric.ApiKey"
             android:value="ba1d68003a16b460a6a3464dc41be92271b9a32c" />
     </application>
-
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
