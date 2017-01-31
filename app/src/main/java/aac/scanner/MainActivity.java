@@ -21,6 +21,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -53,9 +54,11 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
 
-    private Mat rgba,gray,canny;
+    private Mat rgba;
 
-
+    static {
+        System.loadLibrary("Scanner");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,48 +91,18 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int width, int height) {
         rgba = new Mat(height,width, CvType.CV_8UC4);
-        gray = new Mat(height,width, CvType.CV_8UC1);
-        canny = new Mat(height,width, CvType.CV_8UC1);
     }
 
     @Override
     public void onCameraViewStopped() {
         rgba.release();
-        gray.release();
-        canny.release();
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        List<MatOfPoint> contours = new ArrayList<>();
-        MatOfPoint2f matOfPoint2f_1 ;
-        MatOfPoint2f approxCurves = new MatOfPoint2f();
-        MatOfPoint2f approx = new MatOfPoint2f();
-        MatOfPoint mat = new MatOfPoint();
-        Double epsilon, maxArea = 0.0, area;
         rgba = inputFrame.rgba();
-        Imgproc.cvtColor(rgba,gray,Imgproc.COLOR_RGBA2GRAY);
-        Imgproc.GaussianBlur(gray,gray,new Size(5,5),0);
-        Imgproc.Canny(gray,canny,75,200);
-        Imgproc.findContours(canny,contours, new Mat(),Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        for(int i=0;i<contours.size();i++){
-            area = contourArea(contours.get(i));
-            matOfPoint2f_1 = new MatOfPoint2f(contours.get(i).toArray());
-            epsilon = Imgproc.arcLength(matOfPoint2f_1,TRUE)*0.02;
-            Imgproc.approxPolyDP(matOfPoint2f_1,approxCurves,epsilon,TRUE);
-
-            if(area > maxArea && approxCurves.total() == 4){
-                maxArea = area;
-                approx = approxCurves;
-            }
-        }
-
-        contours.clear();
-        approx.convertTo(mat,CvType.CV_32S);
-        contours.add(mat);
-        Imgproc.drawContours(rgba,contours,-1, new Scalar(0,255,0),2);
-        return canny;
+        ScannerNative.drawContours(rgba.getNativeObjAddr());
+        return rgba;
     }
 
     @Override
