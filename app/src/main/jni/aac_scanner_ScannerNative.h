@@ -2,7 +2,7 @@
 #include <jni.h>
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
-/* Header for class aac_ndkopencv_OpencvNativeClass */
+/* Header for class aac_scanner_ScannerNative */
 
 using namespace cv;
 using namespace std;
@@ -15,9 +15,9 @@ extern "C" {
 /*
  * Class:     aac_scanner_ScannerNative
  * Method:    drawContours
- * Signature: (J)V
+ * Signature: (J)[F
  */
-JNIEXPORT void JNICALL Java_aac_scanner_ScannerNative_drawContours
+JNIEXPORT jfloatArray JNICALL Java_aac_scanner_ScannerNative_drawContours
   (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus

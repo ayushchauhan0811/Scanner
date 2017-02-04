@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/activity_scan_image"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="aac.scanner.MainActivity">
+    tools:context="aac.scanner.ScanImageActivity">
 
-    <aac.scanner.ScannerView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/java_camera_view"
-        />
+        android:id="@+id/scanned_image"/>
 
 </RelativeLayout>
