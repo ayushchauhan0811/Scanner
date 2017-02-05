@@ -61,10 +61,10 @@ public class ScannerView extends JavaCameraView implements Camera.PictureCallbac
         this.mPictureFileName = fileName;
         // Postview and jpeg are sent in the same buffers if the queue is not empty when performing a capture.
         // Clear up buffers to avoid mCamera.takePicture to be stuck because of a memory issue
+        mCamera.setPreviewCallback(null);
         System.gc();
         // PictureCallback is implemented by the current class
         try {
-            mCamera.setPreviewCallback(null);
             mCamera.takePicture(null, null, this);
         } catch (Exception e) {
             Log.e(TAG,"takePicture failed",e);
@@ -79,7 +79,8 @@ public class ScannerView extends JavaCameraView implements Camera.PictureCallbac
         // Write the image in a file (in jpeg format)
         try {
             FileOutputStream fos = new FileOutputStream(mPictureFileName);
-            Toast.makeText(getContext(),"New Image saved:" + mPictureFileName,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),"New Image saved:" + mPictureFileName,Toast.LENGTH_SHORT)
+                    .show();
             fos.write(data);
             fos.close();
         } catch (Exception e) {

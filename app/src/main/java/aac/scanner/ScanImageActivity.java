@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
@@ -20,7 +21,7 @@ public class ScanImageActivity extends AppCompatActivity {
     private float minX, minY, maxX, maxY;
     private String fileName;
     private Point p1,p2;
-    private Mat src;
+    private Mat src,mRgbaT,mRgbaF;
     private File image;
 
     @Override
@@ -52,8 +53,18 @@ public class ScanImageActivity extends AppCompatActivity {
 
         src = Imgcodecs.imread(fileName);
         Imgproc.rectangle(src,p1,p2,new Scalar(0,255,0));
+        rotateSrc();
         Imgcodecs.imwrite(fileName,src);
         scannedImage.setImageBitmap(BitmapFactory.decodeFile(image.getAbsolutePath()));
+    }
+
+    private void rotateSrc() {
+        mRgbaF = src.clone();
+        mRgbaT = src.clone();
+        // Rotate mRgba 90 degrees
+        Core.transpose(src, mRgbaT);
+        Imgproc.resize(mRgbaT, mRgbaF, mRgbaF.size(), 0,0, 0);
+        Core.flip(mRgbaF, src, 1 );
     }
 
 

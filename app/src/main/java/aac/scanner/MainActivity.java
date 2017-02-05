@@ -23,6 +23,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
 
 
 import java.io.File;
@@ -31,12 +32,15 @@ import java.util.Date;
 
 import io.fabric.sdk.android.Fabric;
 
+import static aac.scanner.R.string.fileName;
+
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
 
     private static String TAG = "Scanner";
     private ScannerView scannerView;
     float[] points;
+    private static boolean safeToTakePicture;
 
     private BaseLoaderCallback baseLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -53,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
 
-    private Mat rgba;
+    private Mat rgba,original;
 
     static {
         System.loadLibrary("Scanner");
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
 
         checkPermissions();
-
+        safeToTakePicture = true;
         scannerView = (ScannerView) findViewById(R.id.java_camera_view);
         scannerView.setVisibility(View.VISIBLE);
         scannerView.setCvCameraViewListener(this);
@@ -94,12 +98,13 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
                     if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
                         Log.d(TAG, "Can't create directory to save image.");
-                    } else {
+                    } else if(safeToTakePicture) {
+                        safeToTakePicture = false;
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyymmddhhmmss");
                         String currentDateAndTime = sdf.format(new Date());
                         String fileName = pictureFileDir.getPath() + File.separator +
                                         "scanner_" + currentDateAndTime + ".jpg";
-                        scannerView.takePicture(fileName);
+                        Imgcodecs.imwrite(fileName,original);
                         Log.d(TAG,fileName);
                         Intent intent = new Intent(getApplicationContext(),ScanImageActivity.class);
                         intent.putExtra(getString(R.string.points),points);
@@ -151,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         rgba = inputFrame.rgba();
-
+        original = rgba.clone();
         // Finding contours that represents the piece of paper being scanned
         points = ScannerNative.drawContours(rgba.getNativeObjAddr());
         return rgba;
@@ -165,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, this, baseLoaderCallback);
         } else {
             Log.d(TAG, "OpenCV library found inside package. Using it!");
+            safeToTakePicture = true;
             baseLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
     }
